@@ -1,0 +1,11 @@
+tmp
+monigo
+coverage.*
+.env
+*.log
+vendor/
+coverage.*
+*.out
+.vscode/
+.idea/
+*.swp

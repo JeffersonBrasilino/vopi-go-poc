@@ -1,0 +1,117 @@
+Table person_types [headercolor: #175e7a] {
+	id serial [ pk, not null, unique ]
+	description varchar(255)
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+	deleted_at timestamp
+	active boolean [ not null, default: true, note: 'true - ativo; false - inativo' ]
+}
+
+Table messages [headercolor: #175e7a] {
+	id serial [ pk, not null, unique ]
+	bot_id integer
+	chat_participant_id integer
+	payload text [ not null ]
+	payload_type integer [ not null ]
+	header jsonb
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+	deleted_at timestamp
+	active boolean [ not null, default: true, note: 'true - ativo; false - inativo' ]
+}
+
+Table bot_flows [headercolor: #175e7a] {
+	id serial [ pk, not null, unique ]
+	bot_id integer [ not null ]
+	flow_id varchar(255) [ not null ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+	deleted_at timestamp
+	active boolean [ not null, default: true, note: 'true - ativo; false - inativo' ]
+}
+
+Table bots [headercolor: #175e7a] {
+	id serial [ pk, not null, unique ]
+	name varchar(255) [ not null ]
+	uri varchar(255) [ not null ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+	deleted_at timestamp
+	active boolean [ not null, default: true, note: 'true - ativo; false - inativo' ]
+}
+
+Table persons [headercolor: #175e7a] {
+	id serial [ pk, not null, unique ]
+	person_type_id integer
+	name varchar(255) [ not null, note: 'nome da pessoa' ]
+	document varchar(255) [ not null ]
+	created_at timestamp [ not null, default: 'current_timestamp' ]
+	updated_at timestamp [ not null, default: 'current_timestamp' ]
+	deleted_at timestamp
+	active boolean [ not null, default: true, note: 'true - ativo; false - inativo' ]
+
+	Note: 'tabela de dados gerais de pessoas'
+}
+
+Table contacts [headercolor: #175e7a] {
+	id serial [ pk, not null, unique ]
+	user_id integer [ not null ]
+	contact varchar(255) [ not null, note: 'nome da pessoa' ]
+	created_at timestamp [ not null, default: 'current_timestamp' ]
+	updated_at timestamp [ not null, default: 'current_timestamp' ]
+	deleted_at timestamp
+	active boolean [ not null, default: true, note: 'true - ativo; false - inativo' ]
+
+	Note: 'tabela de dados de contatos'
+}
+
+Table chat_participants [headercolor: #175e7a] {
+	id serial [ pk, not null, unique ]
+	contact_id integer [ not null ]
+	chat_id integer [ not null ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+	deleted_at timestamp
+	active boolean [ not null, default: true, note: 'true - ativo; false - inativo' ]
+
+	Note: 'tabela de participantes do chat(pessoa, atendente)'
+}
+
+Table chats [headercolor: #175e7a] {
+	id serial [ pk, not null, unique ]
+	bot_flow_id integer [ not null ]
+	chat_status_id integer [ not null ]
+	chat_identifier varchar(255) [ not null ]
+}
+
+Ref fk_persons_id_contacts {
+	persons.id < contacts.user_id [ delete: no action, update: no action ]
+}
+
+Ref fk_chats_id_chat_participants {
+	chats.id < chat_participants.chat_id [ delete: no action, update: no action ]
+}
+
+Ref fk_contacts_id_chat_participants {
+	contacts.id < chat_participants.contact_id [ delete: no action, update: no action ]
+}
+
+Ref fk_chat_participants_id_messages {
+	chat_participants.id < messages.chat_participant_id [ delete: no action, update: no action ]
+}
+
+Ref fk_bots_id_messages {
+	bots.id < messages.bot_id [ delete: no action, update: no action ]
+}
+
+Ref fk_bots_id_bot_flows {
+	bots.id < bot_flows.bot_id [ delete: no action, update: no action ]
+}
+
+Ref fk_bot_flows_id_chats {
+	bot_flows.id < chats.bot_flow_id [ delete: no action, update: no action ]
+}
+
+Ref fk_person_types_id_persons {
+	person_types.id < persons.person_type_id [ delete: no action, update: no action ]
+}

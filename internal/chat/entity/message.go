@@ -16,6 +16,7 @@ type Message struct {
 }
 
 func NewMessage(
+	uuid string,
 	sender *Person,
 	content string,
 	status string,
@@ -24,7 +25,7 @@ func NewMessage(
 		return nil, core.NewValidationError(err)
 	}
 	return &Message{
-		uuid:      "UUID message generated",
+		uuid:      uuid,
 		sender:    sender,
 		content:   content,
 		status:    status,
@@ -41,6 +42,9 @@ func validateMessage(sender *Person, content string, status string) []string {
 
 	if sender == nil {
 		errors = append(errors, "sender: is required")
+	}
+	if status == "" {
+		errors = append(errors, "status: is required")
 	}
 	return errors
 }

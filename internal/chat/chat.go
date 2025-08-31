@@ -8,8 +8,10 @@ import (
 	"github.com/vopi-go-poc/internal/chat/infra/http"
 	"github.com/vopi-go-poc/internal/chat/usecase/createchat"
 	"github.com/vopi-go-poc/internal/core"
+	"github.com/vopi-go-poc/internal/core/otel"
 )
 
+var tracer = otel.InitTrace("chat-module")
 type ChatModule struct {
 	repo *database.ChatPostgresRepository
 	createUseCase core.UseCase[*createchat.CreateChatInput, any]
@@ -32,7 +34,7 @@ func (m *ChatModule) registerUseCases() {
 func (m *ChatModule) WithHttp(router *gin.Engine) *ChatModule {
 	slog.Info("PersonModule HTTP routes registered.")
 	router.Group("/chat").
-		POST("", func(ctx *gin.Context) { http.CreateChatHandler(ctx, m.createUseCase) })
+		POST("", func(ctx *gin.Context) { http.CreateChatHandler(ctx, m.createUseCase, tracer) })
 
 	return m
 }

@@ -7,10 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vopi-go-poc/internal/chat"
 	"github.com/vopi-go-poc/internal/core"
+	"github.com/vopi-go-poc/internal/core/otel"
 )
 
 func main() {
-	dbport,_:=strconv.Atoi(os.Getenv("DB_PORT"))
+	dbport, _ := strconv.Atoi(os.Getenv("DB_PORT"))
 	dbConn := core.NewPostgresConnection(
 		os.Getenv("DB_HOST"),
 		dbport,
@@ -19,6 +20,11 @@ func main() {
 		os.Getenv("DB_NAME"),
 		os.Getenv("DB_SSL_MODE"),
 	)
+
+	_, err := otel.InitOtelTracerProvider("chat-service")
+	if err != nil {
+		panic(err)
+	}
 
 	r := gin.Default()
 	chat.NewChatModule(dbConn).WithHttp(r)

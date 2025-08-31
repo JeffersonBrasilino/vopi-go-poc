@@ -29,6 +29,68 @@ services:
     networks:
       - api
 
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.92.0
+    container_name: otel-collector
+    command:
+      - --config=/etc/otelcol-contrib/config.yaml
+    volumes:
+      - ./.docker/otel/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+    ports:
+      - 1888:1888 # pprof extension
+      - 8888:8888 # Prometheus metrics exposed by the Collector
+      - 8889:8889 # Prometheus exporter metrics
+      - 13133:13133 # health_check extension
+      - 4317:4317 # OTLP gRPC receiver
+      - 4318:4318 # OTLP http receiver
+      - 55679:55679 # zpages extension
+    networks:
+      - "api"
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      #- "4317" #grpc port
+    environment:
+      - LOG_LEVEL=debug
+      - COLLECTOR_OTLP_ENABLED=true
+    networks:
+      - api
+
+  # loki:
+  #   image: grafana/loki:latest
+  #   command:
+  #     - -config.file=/etc/loki/loki-config.yaml
+  #   container_name: loki
+  #   volumes:
+  #     - ./.docker/otel/loki-config.yaml:/etc/loki/loki-config.yaml
+  #   ports:
+  #     - "3100:3100"
+  #     - 7946
+  #     - 9095
+  #   networks:
+  #     - "otel-network"
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: grafana
+  #   #    profiles: [ "all" ]
+  #   volumes:
+  #     - ./.docker/otel/grafana_datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+  #   environment:
+  #     GF_SECURITY_ADMIN_USER: "admin"
+  #     GF_SECURITY_ADMIN_PASSWORD: "admin"
+  #     GF_USERS_ALLOW_SIGN_UP: "true"
+  #     GF_SERVER_PROTOCOL: "http"
+  #     GF_SERVER_HTTP_PORT: "3000"
+  #     GF_SERVER_DOMAIN: "grafana.local"
+  #     GF_FEATURE_TOGGLES_ENABLE: "traceqlEditor metricsSummary accessControlOnCall"
+  #     GF_INSTALL_PLUGINS: "https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app https://storage.googleapis.com/integration-artifacts/grafana-exploretraces-app/grafana-exploretraces-app-latest.zip;grafana-traces-app"
+  #   networks:
+  #     - "otel-network"
+  #   ports:
+  #     - "3000:3000"
+
 networks:
   api:
     driver: bridge

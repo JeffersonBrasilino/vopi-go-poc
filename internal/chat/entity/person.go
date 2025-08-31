@@ -7,59 +7,74 @@ import (
 )
 
 type Person struct {
-	uuId    string
-	contact string
-	name    string
-	createdAt time.Time
-	updatedAt time.Time
+	uuid       string
+	name       string
+	document   string
+	personType int
+	contacts   *Contact
+	createdAt  time.Time
+	updatedAt  time.Time
 }
 
 func NewPerson(
-	contact string,
-	name    string,
+	uuid string,
+	name string,
+	document string,
+	personType int,
+	contacts *Contact,
 ) (*Person, error) {
-	if err := validatePerson(contact, name); err != nil {
+	if err := validatePerson(uuid, name, document, personType, contacts); err != nil {
 		return nil, core.NewValidationError(err)
 	}
+
 	return &Person{
-		uuId:    "UUID person generated",
-		contact: contact,
-		name:    name,
-		createdAt: time.Now(),
-		updatedAt: time.Now(),
+		uuid:       uuid,
+		name:       name,
+		document:   document,
+		personType: personType,
+		contacts:   contacts,
+		createdAt:  time.Now(),
+		updatedAt:  time.Now(),
 	}, nil
 }
 
-func validatePerson(contact, name string) []string {
+func validatePerson(
+	uuid string, name string, document string, personType int, contacts *Contact) []string {
 	var errors []string
-	if contact == "" {
-		errors = append(errors, "contact is required")
+	if uuid == "" {
+		errors = append(errors, "uuid is required")
 	}
-
 	if name == "" {
 		errors = append(errors, "name is required")
 	}
-	
+	if document == "" {
+		errors = append(errors, "document is required")
+	}
+	if personType == 0 {
+		errors = append(errors, "personType is required")
+	}
+	if contacts == nil {
+		errors = append(errors, "at least one contact is required")
+	}
 	return errors
 }
 
-// Getters
-func (p *Person) UuId() string {
-	return p.uuId
-}
-
-func (p *Person) Contact() string {
-	return p.contact
+func (p *Person) Uuid() string {
+	return p.uuid
 }
 
 func (p *Person) Name() string {
 	return p.name
 }
 
-func (p *Person) CreatedAt() time.Time {
-	return p.createdAt
+func (p *Person) Document() string {
+	return p.document
 }
 
-func (p *Person) UpdatedAt() time.Time {
-	return p.updatedAt
+func (p *Person) Contacts() *Contact {
+	return p.contacts
+}
+
+func (p *Person) PersonType() int {
+	return p.personType
 }

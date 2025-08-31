@@ -4,19 +4,20 @@ type CreateChatInput struct {
 	ChannelId    string
 	Participants []*Person
 	Messages     []*Message
-	BotName string
+	BotName      string
 }
 
 type Message struct {
 	Content string
 	Status  string
-	Sender  *Person
+	Sender  string
 }
 
 type Person struct {
-	Contact string
-	Name    string
+	Name     string `json:"name"`
+	Document string `json:"document"`
+	Contacts string `json:"contacts"`
+	//PersonType int      `json:"personType"`
 }
-
 
 //application -> input -> infra

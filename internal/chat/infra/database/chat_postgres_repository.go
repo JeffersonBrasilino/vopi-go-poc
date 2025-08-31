@@ -17,7 +17,7 @@ func NewChatPostgresRepository(dbInstance core.DbConnection) *ChatPostgresReposi
 	}
 }
 
-func (r *ChatPostgresRepository) CreateChat(chat *entity.Chat) error {
+func (r *ChatPostgresRepository) Create(chat *entity.Chat) error {
 	// Implementation for creating a chat in PostgreSQL
 	return nil
 }

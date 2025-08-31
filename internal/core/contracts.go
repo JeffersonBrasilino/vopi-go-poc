@@ -1,9 +1,14 @@
 package core
 
-import "database/sql"
+import (
+	"context"
+	"database/sql"
+
+	"github.com/vopi-go-poc/internal/core/otel"
+)
 
 type UseCase[TInput any, TOutput any] interface {
-	Execute(input TInput) (output TOutput, err error)
+	Execute(ctx context.Context, input TInput, trace otel.OtelTracer) (output TOutput, err error)
 }
 
 type DbConnection interface {

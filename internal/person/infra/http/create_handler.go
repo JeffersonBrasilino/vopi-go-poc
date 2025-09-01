@@ -1,7 +1,6 @@
 package http
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -24,7 +23,7 @@ func CreatePersonHandler(
 		return
 	}
 
-	useCaseInput := &create.CreateInputDto{
+	/* useCaseInput := &create.CreateInputDto{
 		Name:       requestPayload.Name,
 		Document:   requestPayload.Document,
 		Contacts:   requestPayload.Contacts,
@@ -38,5 +37,5 @@ func CreatePersonHandler(
 		return
 	}
 
-	context.JSON(http.StatusCreated, result)
+	context.JSON(http.StatusCreated, result) */
 }

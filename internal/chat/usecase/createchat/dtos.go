@@ -16,7 +16,7 @@ type Message struct {
 type Person struct {
 	Name     string `json:"name"`
 	Document string `json:"document"`
-	Contacts string `json:"contacts"`
+	Contact string `json:"contact"`
 	//PersonType int      `json:"personType"`
 }
 

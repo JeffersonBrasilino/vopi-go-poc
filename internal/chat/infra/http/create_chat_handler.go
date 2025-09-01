@@ -26,10 +26,11 @@ func CreateChatHandler(
 
 	var requestPayload struct {
 		ChannelId    string `json:"channelId" binding:"required"`
+		BotName      string `json:"botName" binding:"required"`
 		Participants []*struct {
 			Name     string `json:"name" binding:"required"`
 			Document string `json:"document" binding:"required"`
-			Contact  string `json:"contacts" binding:"required"`
+			Contact  string `json:"contact" binding:"required"`
 		} `json:"participants" binding:"required"`
 		Messages []*struct {
 			Content string `json:"content" binding:"required"`
@@ -49,6 +50,7 @@ func CreateChatHandler(
 	//span.AddEvent("create chat input")
 	useCaseInput := &createchat.CreateChatInput{
 		ChannelId: requestPayload.ChannelId,
+		BotName:   requestPayload.BotName,
 	}
 
 	for _, m := range requestPayload.Messages {
@@ -56,6 +58,14 @@ func CreateChatHandler(
 			Content: m.Content,
 			Status:  m.Status,
 			Sender:  m.Sender,
+		})
+	}
+
+	for _, p := range requestPayload.Participants {
+		useCaseInput.Participants = append(useCaseInput.Participants, &createchat.Person{
+			Name:     p.Name,
+			Document: p.Document,
+			Contact:  p.Contact,
 		})
 	}
 

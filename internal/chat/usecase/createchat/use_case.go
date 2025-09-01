@@ -12,7 +12,6 @@ import (
 
 type UseCase struct {
 	database CreateChatRepository
-	trace otel.OtelTracer
 }
 
 func NewCreateChat(
@@ -30,7 +29,7 @@ func (r *UseCase) Execute(ctx context.Context, data *CreateChatInput, trace otel
 	span.AddEvent("start use case", otel.NewOtelAttr("chat.channelId", data.ChannelId))
 	chat, err := r.makeChat(data)
 	if err != nil {
-		span.Error(err,"failed to make chat")
+		span.Error(err, "failed to make chat")
 		span.AddEvent("failed to make chat")
 		return nil, err
 	}
@@ -42,14 +41,9 @@ func (r *UseCase) Execute(ctx context.Context, data *CreateChatInput, trace otel
 func (c *UseCase) makeParticipants(data *CreateChatInput) ([]*entity.Person, error) {
 	var participants []*entity.Person
 	var errors []string
-
+	
 	for k, p := range data.Participants {
-		contact, err := entity.NewContact(p.Contacts)
-		if err != nil {
-			errors = append(errors, fmt.Sprintf("participants.%d.contacts: %v", k, err))
-			continue
-		}
-
+		contact, _ := entity.NewContact(p.Contact)
 		person, err := entity.NewPerson(
 			uuid.NewString(),
 			p.Name,
@@ -87,7 +81,7 @@ func (c *UseCase) makeMessages(data *CreateChatInput, participants []*entity.Per
 			m.Content,
 			m.Status,
 		)
-
+		
 		if err != nil {
 			errors = append(errors, fmt.Sprintf("messages.%d: %v", k, err))
 			continue

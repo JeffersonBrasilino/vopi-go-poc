@@ -39,7 +39,6 @@ func validateMessage(sender *Person, content string, status string) []string {
 	if content == "" {
 		errors = append(errors, "content: is required")
 	}
-
 	if sender == nil {
 		errors = append(errors, "sender: is required")
 	}

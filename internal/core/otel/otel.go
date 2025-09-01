@@ -30,7 +30,7 @@ type OtelTracer interface {
 	// Retorno:
 	//   context.Context - contexto atualizado.
 	//   OtelSpan - span criado.
-	Start(ctx context.Context, name string, attributes ...otelAttribute) (context.Context, OtelSpan)
+	Start(ctx context.Context, name string, attributes ...OtelAttribute) (context.Context, OtelSpan)
 }
 
 // OtelSpan define interface para manipulação de spans.
@@ -49,7 +49,7 @@ type OtelSpan interface {
 	//
 	// Exemplo de uso:
 	//   span.AddEvent("evento", attr1)
-	AddEvent(eventMessage string, attributes ...otelAttribute)
+	AddEvent(eventMessage string, attributes ...OtelAttribute)
 
 	// SetStatus define o status do span (sucesso ou erro) e uma descrição.
 	//
@@ -82,7 +82,7 @@ type OtelSpan interface {
 }
 
 // otelAttribute representa um par chave-valor para atributos de span/evento.
-type otelAttribute struct {
+type OtelAttribute struct {
 	key   string
 	value string
 }
@@ -123,7 +123,7 @@ func InitOtelTracerProvider(serviceName string) (*otlptrace.Exporter, error) {
 //
 // Exemplo de uso:
 //   opts := makeAttributes([]otelAttribute{core.NewOtelAttr("chave", "valor")})
-func makeAttributes(attributes []otelAttribute) traceTypes.SpanStartEventOption {
+func makeAttributes(attributes []OtelAttribute) traceTypes.SpanStartEventOption {
 	var attrs []attribute.KeyValue
 	if len(attributes) > 0 {
 		for _, attr := range attributes {
@@ -144,8 +144,8 @@ func makeAttributes(attributes []otelAttribute) traceTypes.SpanStartEventOption 
 //
 // Exemplo de uso:
 //   attr := otel.NewOtelAttr("chave", "valor")
-func NewOtelAttr(key string, value string) otelAttribute {
-	return otelAttribute{
+func NewOtelAttr(key string, value string) OtelAttribute {
+	return OtelAttribute{
 		key:   key,
 		value: value,
 	}

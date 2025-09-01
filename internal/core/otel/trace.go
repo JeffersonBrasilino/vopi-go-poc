@@ -34,7 +34,7 @@ func InitTrace(serviceName string) *otelTrace {
 func (t *otelTrace) Start(
 	ctx context.Context,
 	name string,
-	attributes ...otelAttribute,
+	attributes ...OtelAttribute,
 ) (context.Context, OtelSpan) {
 	ctx, span := t.tracer.Start(ctx, name, makeAttributes(attributes))
 	return ctx, &otelSpan{
@@ -47,7 +47,7 @@ func (s *otelSpan) End() {
 	s.span.End()
 }
 
-func (s *otelSpan) AddEvent(eventMessage string, attributes ...otelAttribute) {
+func (s *otelSpan) AddEvent(eventMessage string, attributes ...OtelAttribute) {
 	s.span.AddEvent(eventMessage, makeAttributes(attributes))
 }
 

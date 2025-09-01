@@ -108,6 +108,68 @@ sequenceDiagram
 make start-dev
 ```
 
+## Observabilidade e OpenTelemetry (Otel)
+
+O projeto utiliza uma camada de abstração para OpenTelemetry, localizada em `internal/core/otel`, que facilita a instrumentação de rastreamento distribuído (tracing) de forma desacoplada e idiomática.
+
+### Objetivo
+
+- Permitir instrumentação de spans, eventos e status em handlers, usecases e repositórios, sem acoplamento direto à implementação do OpenTelemetry.
+- Facilitar a troca, extensão ou desativação da instrumentação sem impacto no domínio.
+
+### Como Utilizar
+
+#### 1. Inicialização do Tracer
+
+No início do módulo (exemplo: `internal/chat/chat.go`):
+
+```go
+var tracer = otel.InitTrace("chat-module")
+```
+
+#### 2. Uso em Handlers ou Usecases
+
+Ao criar handlers HTTP, injete o tracer e utilize-o para criar spans:
+
+```go
+router.Group("/chat").
+  POST("", func(ctx *gin.Context) { http.CreateChatHandler(ctx, m.createUseCase, tracer) })
+```
+
+No handler, crie spans para monitorar operações relevantes:
+
+```go
+ctx, span := tracer.Start(ctx, "CreateChatHandler")
+defer span.End()
+```
+
+Adicione eventos, status ou erros conforme necessário:
+
+```go
+span.AddEvent("validando payload")
+span.Success("chat criado com sucesso")
+// ou
+span.Error(err, "erro ao criar chat")
+```
+
+#### 3. Interface e Extensibilidade
+
+A abstração define interfaces para `OtelTracer` e `OtelSpan`, permitindo testes e substituição fácil da implementação.
+
+#### 4. Exemplo Completo
+
+Veja o módulo `internal/chat` para um exemplo de uso integrado do tracer em rotas, handlers e casos de uso.
+
+---
+
+### Benefícios
+
+- **Desacoplamento**: O domínio não depende diretamente do pacote OpenTelemetry.
+- **Testabilidade**: Possível mockar spans em testes.
+- **Padronização**: Uso consistente de tracing em todos os módulos.
+
+---
+
 ## Observações
 
 - O projeto não versiona o vendor/ por padrão.
